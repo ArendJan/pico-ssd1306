@@ -9,16 +9,31 @@ namespace pico_ssd1306 {
         uint8_t font_width = font[0];
 
         uint16_t n = 0;
+        uint8_t font_height = font[1];
+        uint8_t line_no = 0;
+        uint8_t x_offset = 0;
         while (text[n] != '\0') {
+            if(text[n] == '\n'){
+                line_no++;
+                n++;
+                x_offset = 0;
+                continue;
+            }
+            if(anchor_x + (x_offset * font_width) >= ssd1306->getWidth()){
+                line_no++;
+                anchor_x = 0;
+                x_offset = 0;
+
+            }
             switch (rotation) {
                 case Rotation::deg0:
-                    drawChar(ssd1306, font, text[n], anchor_x + (n * font_width), anchor_y, mode, rotation);
+                    drawChar(ssd1306, font, text[n], anchor_x + (x_offset * font_width), anchor_y + (font_height * line_no), mode, rotation);
                     break;
                 case Rotation::deg90:
                     drawChar(ssd1306, font, text[n], anchor_x, anchor_y + (n * font_width), mode, rotation);
                     break;
             }
-
+            x_offset++;
             n++;
         }
     }
