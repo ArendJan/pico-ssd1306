@@ -69,24 +69,15 @@ namespace pico_ssd1306 {
 
         uint8_t width, height;
 
-        bool inverted;
+  bool inverted = false;
 
         /// \brief Sends single 8bit command to ssd1306 controller
         /// \param command - byte to be sent to controller
         void cmd(unsigned char command);
 
     public:
-
-        uint8_t getWidth() {
-            return width;
-        }
-        uint8_t getHeight() {
-            return height;
-        }
-        /// \brief SSD1306 constructor initialized display and sets all required registers for operation
-        /// \param i2CInst - i2c instance. Either i2c0 or i2c1
-        /// \param Address - display i2c address. usually for 128x32 0x3C and for 128x64 0x3D
-        /// \param size - display size. Acceptable values W128xH32 or W128xH64
+  bool enabled = true;
+  int x = 0;
         SSD1306(i2c_inst *i2CInst, uint16_t Address, Size size);
 
         /// \brief Set pixel operates frame buffer

@@ -118,8 +118,15 @@ namespace pico_ssd1306 {
         memcpy(data + 1, frameBuffer.get(), FRAMEBUFFER_SIZE);
 
         // send data to device
-        i2c_write_blocking(this->i2CInst, this->address, data, FRAMEBUFFER_SIZE + 1, false);
-    }
+  // very long time, as it takes ~100ms to send 1025 bytes
+  int i2c_sdk_call_return_value = i2c_write_blocking_until(
+      this->i2CInst, this->address, data, FRAMEBUFFER_SIZE + 1, false,
+      make_timeout_time_ms(200));
+  if (i2c_sdk_call_return_value != FRAMEBUFFER_SIZE + 1) {
+    this->x = i2c_sdk_call_return_value;
+    this->enabled = false;
+  }
+}
 
     void SSD1306::clear() {
         this->frameBuffer.clear();
@@ -163,9 +170,12 @@ namespace pico_ssd1306 {
     void SSD1306::cmd(unsigned char command) {
         // 0x00 is a byte indicating to ssd1306 that a command is being sent
         uint8_t data[2] = {0x00, command};
-        i2c_write_blocking(this->i2CInst, this->address, data, 2, false);
-    }
-
+  int i2c_sdk_call_return_value = i2c_write_blocking_until(
+      this->i2CInst, this->address, data, 2, false, make_timeout_time_ms(10));
+  if (i2c_sdk_call_return_value != 2) {
+    this->enabled = false;
+  }
+}
 
     void SSD1306::setContrast(unsigned char contrast) {
         this->cmd(SSD1306_CONTRAST);
