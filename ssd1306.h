@@ -76,8 +76,10 @@ namespace pico_ssd1306 {
         void cmd(unsigned char command);
 
     public:
-  bool enabled = true;
-  int x = 0;
+        bool enabled = true;
+        int x = 0;
+        uint8_t getWidth(){return this->width;}
+        uint8_t getHeight(){return this->height;}
         SSD1306(i2c_inst *i2CInst, uint16_t Address, Size size);
 
         /// \brief Set pixel operates frame buffer
