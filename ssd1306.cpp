@@ -104,13 +104,13 @@ namespace pico_ssd1306 {
             
 
     void SSD1306::sendBuffer() {
-            if(! this->postpone_system) {
         this->cmd(SSD1306_PAGEADDR); //Set page address from min to max
         this->cmd(0x00);
         this->cmd(0x07);
         this->cmd(SSD1306_COLUMNADDR); //Set column address from min to max
         this->cmd(0x00);
         this->cmd(127);
+        if(! this->postpone_system) {
 
             // create a temporary buffer of size of buffer plus 1 byte for startline command aka 0x40
             unsigned char data[FRAMEBUFFER_SIZE + 1];
@@ -133,12 +133,6 @@ namespace pico_ssd1306 {
         } else {
             this->postponed_write = true;
             this->postponed_write_count = 0;
-            this->cmd(0x21);
-            this->cmd(0);// await self.write_cmd_async(xpos0)
-            this->cmd(127);// await self.write_cmd_async(xpos1)
-            this->cmd(0x22);// await self.write_cmd_async(0x22)  # SET_PAGE_ADDR)
-            this->cmd(0);// await self.write_cmd_async(0)
-            this->cmd(7);// await self.write_cmd_async(self.pages - 1)
         }
     }
 
