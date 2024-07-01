@@ -1,4 +1,5 @@
 #include "ssd1306.h"
+#include <array>
 
 namespace pico_ssd1306 {
     SSD1306::SSD1306(i2c_inst *i2CInst, uint16_t Address, Size size) {
@@ -100,8 +101,10 @@ namespace pico_ssd1306 {
 
 
     }
+            
 
     void SSD1306::sendBuffer() {
+            if(! this->postpone_system) {
         this->cmd(SSD1306_PAGEADDR); //Set page address from min to max
         this->cmd(0x00);
         this->cmd(0x07);
@@ -109,24 +112,35 @@ namespace pico_ssd1306 {
         this->cmd(0x00);
         this->cmd(127);
 
-        // create a temporary buffer of size of buffer plus 1 byte for startline command aka 0x40
-        unsigned char data[FRAMEBUFFER_SIZE + 1];
+            // create a temporary buffer of size of buffer plus 1 byte for startline command aka 0x40
+            unsigned char data[FRAMEBUFFER_SIZE + 1];
 
-        data[0] = SSD1306_STARTLINE;
+            data[0] = SSD1306_STARTLINE;
 
-        // copy framebuffer to temporary buffer
-        memcpy(data + 1, frameBuffer.get(), FRAMEBUFFER_SIZE);
+            // copy framebuffer to temporary buffer
+            memcpy(data + 1, frameBuffer.get(), FRAMEBUFFER_SIZE);
 
         // send data to device
-  // very long time, as it takes ~100ms to send 1025 bytes
-  int i2c_sdk_call_return_value = i2c_write_blocking_until(
-      this->i2CInst, this->address, data, FRAMEBUFFER_SIZE + 1, false,
-      make_timeout_time_ms(200));
-  if (i2c_sdk_call_return_value != FRAMEBUFFER_SIZE + 1) {
-    this->x = i2c_sdk_call_return_value;
-    this->enabled = false;
-  }
-}
+        // very long time, as it takes ~100ms to send 1025 bytes
+    
+        int i2c_sdk_call_return_value = i2c_write_blocking_until(
+            this->i2CInst, this->address, data, FRAMEBUFFER_SIZE + 1, false,
+            make_timeout_time_ms(200));
+        if (i2c_sdk_call_return_value != FRAMEBUFFER_SIZE + 1) {
+            this->x = i2c_sdk_call_return_value;
+            this->enabled = false;
+        }
+        } else {
+            this->postponed_write = true;
+            this->postponed_write_count = 0;
+            this->cmd(0x21);
+            this->cmd(0);// await self.write_cmd_async(xpos0)
+            this->cmd(127);// await self.write_cmd_async(xpos1)
+            this->cmd(0x22);// await self.write_cmd_async(0x22)  # SET_PAGE_ADDR)
+            this->cmd(0);// await self.write_cmd_async(0)
+            this->cmd(7);// await self.write_cmd_async(self.pages - 1)
+        }
+    }
 
     void SSD1306::clear() {
         this->frameBuffer.clear();
@@ -192,6 +206,37 @@ namespace pico_ssd1306 {
 
     void SSD1306::turnOn() {
         this->cmd(SSD1306_DISPLAY_ON);
+    }
+    bool SSD1306::sendLine(int line) {
+        std::array<uint8_t, 17> data;
+        data[0] = 0x40;
+        for (int i = 0; i < 16; i++) {
+            data[i+1] = this->frameBuffer.get()[line * 16 + i];
+        }
+        int i2c_sdk_call_return_value = i2c_write_blocking_until(
+            this->i2CInst, this->address, data.data(), 17, false,
+            make_timeout_time_ms(10));
+        if (i2c_sdk_call_return_value != 17) {
+            this->x = i2c_sdk_call_return_value;
+            this->enabled = false;
+            return false;
+        }
+        return true;
+    }
+
+    // send a small package each time instead of blocking the whole mcu for 100ms
+    bool SSD1306::postWrite() {
+        if (this->postponed_write) {
+            // send one line
+            this->sendLine(this->postponed_write_count);
+            this->postponed_write_count++;
+            if (this->postponed_write_count == 64) {
+                // this->sendBuffer();
+                this->postponed_write = false;
+                this->postponed_write_count = 0;
+            }
+        }
+        return this->postponed_write;
     }
 
 }

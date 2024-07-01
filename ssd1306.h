@@ -69,12 +69,15 @@ namespace pico_ssd1306 {
 
         uint8_t width, height;
 
-  bool inverted = false;
+        bool inverted = false;
 
         /// \brief Sends single 8bit command to ssd1306 controller
         /// \param command - byte to be sent to controller
         void cmd(unsigned char command);
 
+        bool postpone_system = false;
+        bool postponed_write = false;
+        uint16_t postponed_write_count = 0;
     public:
         bool enabled = true;
         int x = 0;
@@ -127,6 +130,13 @@ namespace pico_ssd1306 {
 
         /// \brief Turns display on
         void turnOn();
+
+        bool postWrite(); // true if not yet done
+        void setPostWrite(bool postWrite) {
+            this->postpone_system = postWrite;
+        }
+        bool sendLine(int line);
+
     };
 
 }
