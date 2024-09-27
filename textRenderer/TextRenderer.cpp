@@ -45,7 +45,9 @@ namespace pico_ssd1306 {
         uint8_t font_width = font[0];
         uint8_t font_height = font[1];
 
-        uint16_t seek = (c - 32) * (font_width * font_height) / 8 + 2;
+        uint16_t n_bytes = (font_width* font_height / 8) + ((font_width * font_height % 8) ? 1 : 0);
+
+        uint16_t seek = (c - 32) * n_bytes + 2;
 
         uint8_t b_seek = 0;
 
