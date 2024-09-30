@@ -7,6 +7,7 @@
 #include "8x8_font.h"
 #include "12x16_font.h"
 #include "16x32_font.h"
+#include "font_courB08_6x11.h"
 
 namespace pico_ssd1306{
 
