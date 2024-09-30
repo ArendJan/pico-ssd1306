@@ -19,7 +19,7 @@ namespace pico_ssd1306 {
                 x_offset = 0;
                 continue;
             }
-            if(anchor_x + (x_offset * font_width) >= ssd1306->getWidth()){
+            if(anchor_x + ((x_offset+1) * font_width) >= ssd1306->getWidth()){
                 line_no++;
                 anchor_x = 0;
                 x_offset = 0;
