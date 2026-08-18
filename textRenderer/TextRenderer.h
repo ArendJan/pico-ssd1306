@@ -7,6 +7,7 @@
 #include "8x8_font.h"
 #include "12x16_font.h"
 #include "16x32_font.h"
+#include "6x8_font.h"
 #include "font_courB08_6x11.h"
 
 namespace pico_ssd1306{
@@ -26,7 +27,7 @@ namespace pico_ssd1306{
     /// \param anchor_x, anchor_y - coordinates setting where to put the glyph
     /// \param mode - mode describes setting behavior. See WriteMode doc for more information
     /// \param rotation - either rotates the char by 90 deg or leaves it unrotated
-    void drawChar(pico_ssd1306::SSD1306 *ssd1306, const unsigned char * font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    void drawChar(pico_ssd1306::SSD1306 *ssd1306, const unsigned char * font, char c, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0, uint8_t extra_line_spacing_px = 0);
 
     /// \brief Draws text on screen
     /// \param ssd1306 - pointer to a SSD1306 object aka initialised display
@@ -35,7 +36,8 @@ namespace pico_ssd1306{
     /// \param anchor_x, anchor_y - coordinates setting where to put the text
     /// \param mode - mode describes setting behavior. See WriteMode doc for more information
     /// \param rotation - either rotates the text by 90 deg or leaves it unrotated
-    void drawText(pico_ssd1306::SSD1306 *ssd1306, const unsigned char * font, const char * text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0);
+    /// \param extra_line_spacing_px - extra spacing between lines in pixels
+    void drawText(pico_ssd1306::SSD1306 *ssd1306, const unsigned char * font, const char * text, uint8_t anchor_x, uint8_t anchor_y, WriteMode mode = WriteMode::ADD, Rotation rotation = Rotation::deg0, uint8_t extra_line_spacing_px = 0);
 }
 
 #endif //SSD1306_TEXTRENDERER_H

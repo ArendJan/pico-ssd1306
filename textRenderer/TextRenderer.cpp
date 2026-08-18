@@ -3,13 +3,13 @@
 namespace pico_ssd1306 {
 
     void drawText(pico_ssd1306::SSD1306 *ssd1306, const unsigned char *font, const char *text, uint8_t anchor_x,
-                  uint8_t anchor_y, WriteMode mode, Rotation rotation) {
+                  uint8_t anchor_y, WriteMode mode, Rotation rotation, uint8_t extra_line_spacing_px) {
         if(!ssd1306 || !font || !text) return;
 
         uint8_t font_width = font[0];
 
         uint16_t n = 0;
-        uint8_t font_height = font[1];
+        uint8_t font_height = font[1] + extra_line_spacing_px;
         uint8_t line_no = 0;
         uint8_t x_offset = 0;
         while (text[n] != '\0') {
@@ -39,11 +39,11 @@ namespace pico_ssd1306 {
     }
 
     void drawChar(pico_ssd1306::SSD1306 *ssd1306, const unsigned char *font, char c, uint8_t anchor_x, uint8_t anchor_y,
-                  WriteMode mode, Rotation rotation) {
+                  WriteMode mode, Rotation rotation, uint8_t extra_line_spacing_px) {
         if(!ssd1306 || !font || c < 32) return;
 
         uint8_t font_width = font[0];
-        uint8_t font_height = font[1];
+        uint8_t font_height = font[1] + extra_line_spacing_px;
 
         uint16_t n_bytes = (font_width* font_height / 8) + ((font_width * font_height % 8) ? 1 : 0);
 

@@ -4,6 +4,7 @@ add_library(ssd1306_textRenderer
         8x8_font.h
         12x16_font.h
         16x32_font.h
+        6x8_font.h
         )
 
 target_link_libraries(ssd1306_textRenderer
