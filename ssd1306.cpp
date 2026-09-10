@@ -153,7 +153,7 @@ namespace pico_ssd1306 {
 
     void
     SSD1306::addBitmapImage(int16_t anchorX, int16_t anchorY, uint8_t image_width, uint8_t image_height,
-                            uint8_t *image,
+                            const uint8_t *image,
                             WriteMode mode) {
         uint8_t byte;
         // goes over every single bit in image and sets pixel data on its coordinates

@@ -101,9 +101,9 @@ namespace pico_ssd1306 {
         /// \param anchorY - sets start point of where to put the image on the screen
         /// \param image_width - width of the image in pixels
         /// \param image_height - height of the image in pixels
-        /// \param image - pointer to uint8_t (unsigned char) array containing image data
+        /// \param image - pointer to const uint8_t (unsigned char) array containing image data
         /// \param mode - mode describes setting behavior. See WriteMode doc for more information
-        void addBitmapImage(int16_t anchorX, int16_t anchorY, uint8_t image_width, uint8_t image_height, uint8_t *image,
+        void addBitmapImage(int16_t anchorX, int16_t anchorY, uint8_t image_width, uint8_t image_height, const uint8_t *image,
                             WriteMode mode = WriteMode::ADD);
 
         /// \brief Manually set frame buffer. make sure it's correct size of 1024 bytes
